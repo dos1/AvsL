@@ -28,7 +28,7 @@ function checkwin() {
 function install_keys() {
 
                 document.addEventListener('keydown', function(e) {
-                    var key = e.which || e.keyCode;
+                    var key = e.which || e.keyCode || event.which;
                     if ((key===27) && (!progress)) {
                         progress = true;
                         tut = true;
@@ -38,6 +38,7 @@ function install_keys() {
                         play_sample(samples.music, 1.0, 1.0, true);
                     }
                     if (!progress) return;
+                    if (e.repeat) return;
                     if (key === 65) {
                         apressed = true;
                         lpressed = false;
