@@ -1,6 +1,6 @@
 var x = 100,y = 100;
 
-var bitmaps = ['sky', 'clouds', 'sun', 'hole', 'mole1', 'mole2', 'boom1', 'boom2', 'hand1', 'hand2', 'tut1', 'tut2', 'tut3', 'vs', 'ground', 'awinz', 'lwinz', 'restart'];
+var bitmaps = ['sky', 'clouds', 'sun', 'hole', 'mole1', 'mole2', 'mole3', 'boom1', 'boom2', 'hand1', 'hand2', 'tut1', 'tut2', 'tut3', 'vs', 'ground', 'awinz', 'lwinz', 'restart'];
 var sprites = {};
 var samples = {};
 var tutSprite;
@@ -20,6 +20,9 @@ var armx = -132;
 var progress = true, awon = false, lwon = false;
 
 var frame = 0;
+var introskip = false;
+
+var dosowisko = { enabled: true, alpha: 0, size: 5 };
 
 function checkwin() {
     if (height <= 0) { stop_sample(samples.music); play_sample(samples.lwon); progress = false; lwon = true; }
@@ -59,6 +62,7 @@ function install_keys() {
 
                 document.addEventListener('keydown', function(e) {
                     var key = e.which || e.keyCode || event.which;
+                    
                     if ((key===27) && (!progress)) {
                         progress = true;
                         tut = true;
@@ -66,6 +70,8 @@ function install_keys() {
                         awon = false;
                         lwon = false;hheight = height;
                         play_sample(samples.music, 1.0, 1.0, true);
+                        stop_sample(samples.awon);
+                        stop_sample(samples.lwon);
                     }
                     if (!progress) return;
                     if (e.repeat) return;
@@ -105,6 +111,77 @@ function install_keys() {
                 });
 }
 
+            function start() {
+                play_sample(samples.aaaaa);
+                
+                setTimeout(function() {
+                    if (introskip) return;
+                    play_sample(samples.boom);
+                    showmole = true;
+                    growingmole = true;
+                }, 2000);
+                setTimeout(function() {
+                    if (introskip) return;
+                    play_sample(samples.intro1);
+                }, 5000);
+                setTimeout(function() {
+                    if (introskip) return;
+                    play_sample(samples.intro2);
+                    movingarm = true;
+                }, 9000);
+                setTimeout(function() {
+                    if (introskip) return;
+                    play_sample(samples.bam[0]);
+                    lpressed = true;
+                    hheight = height;
+                }, 11000);
+                setTimeout(function() {
+                    if (introskip) return;
+                    lpressed = false;
+                    confumole = true;
+
+                }, 12000);
+                setTimeout(function() {
+                    if (introskip) return;
+                    lpressed = false;
+                    confumole = false;
+                    play_sample(samples.music, 1.0, 1.0, true);
+
+                }, 12800);
+                setTimeout(function() {
+                    if (introskip) return;
+                    skipintro(true);
+                }, 13000);
+            }
+
+            function skipdosowisko() {
+                dosowisko.enabled = false;
+                    stop_sample(samples.dosowisko);
+                    stop_sample(samples.kbd);
+                    stop_sample(samples.key);
+                    if (dosowisko.interval) clearInterval(dosowisko.interval);
+                    start();
+            }
+            
+            function skipintro(musicplays) {
+                introskip = true;
+                if (!musicplays) {
+                    play_sample(samples.music, 1.0, 1.0, true); }
+stop_sample(samples.aaaaa);
+stop_sample(samples.intro1);
+stop_sample(samples.intro2);
+stop_sample(samples.boom);
+stop_sample(samples.bam[0]);
+movingarm = false;
+armx = 0; height = 60; hheight = height;
+confumole = false;
+lpressed = false; apressed = false;
+tut = true;
+growingmole = false;
+showmole = true;
+install_keys();
+            }
+            
 function main()
 {
 	//enable_debug('debug');
@@ -127,50 +204,73 @@ function main()
         samples.music = load_sample('music.ogg');
         samples.lwon = load_sample('lwinz.ogg');
         samples.awon = load_sample('awinz.ogg');
+        samples.dosowisko = load_sample('dosowisko.ogg');
+        samples.kbd = load_sample('kbd.ogg');
+        samples.key = load_sample('key.ogg');
+        
+        font = create_font('monospace');
+        
+        dosowisko.checkerboard = create_bitmap(320, 180);
+        for (var i=0; i<=320; i=i+2) {
+            for (var j=0; j<=180; j=j+2) {
+                putpixel(dosowisko.checkerboard, i, j, makecol(0, 0, 0, 64));
+            }
+        }
         
         tutSprite = sprites.tut1;
         
 	ready(function(){
-            play_sample(samples.aaaaa);
             
-            setTimeout(function() {
-                play_sample(samples.boom);
-                showmole = true;
-                growingmole = true;
-            }, 2000);
-            setTimeout(function() {
-                play_sample(samples.intro1);
-            }, 5000);
-            setTimeout(function() {
-                play_sample(samples.intro2);
-                movingarm = true;
-            }, 9000);
-            setTimeout(function() {
-                play_sample(samples.bam[0]);
-                lpressed = true;
-                hheight = height;
-            }, 11000);
-            setTimeout(function() {
-                lpressed = false;
-                confumole = true;
+                play_sample(samples.dosowisko);
+                dosowisko.length = 1;
+                
+                setTimeout(function() {
+                    play_sample(samples.kbd);
 
-            }, 12000);
-            setTimeout(function() {
-                lpressed = false;
-                confumole = false;
-                play_sample(samples.music, 1.0, 1.0, true);
+                    dosowisko.interval = setInterval(function() {
+                        dosowisko.length++;
+                    }, 90);
+                }, 2000);
+                
+                setTimeout(function() {
+                    stop_sample(samples.kbd);
+                    clearInterval(dosowisko.interval);
+                    dosowisko.interval = null;
+                    dosowisko.length = 42;
+                }, 3500);
 
-            }, 12800);
-            setTimeout(function() {
-                install_keys();
-                tut = true;
-            }, 13000);
-            
+                setTimeout(function() {
+                    play_sample(samples.key);
+                    dosowisko.blank = true;
+                }, 5200);                
+                
+                setTimeout(function() {
+
+                    if (!dosowisko.enabled) return;
+                           skipdosowisko();
+                }, 6500);
+                
+
+                document.addEventListener('keydown', function(e) {
+                    var key = e.which || e.keyCode || event.which;
+                    
+                    if ((key===27) && (dosowisko.enabled)) {
+                        skipdosowisko();
+                    } else if ((key===27) && (!introskip)) {
+                        skipintro();
+                    }
+                    
+
+                });                
+                
 		loop(function(){
                     counter++;
                     x++;
                     cloudcount-= 5;
                     suncount--;
+                    dosowisko.alpha+=1.5;
+                    dosowisko.size-=0.08;
+                    if (counter % 30 === 0) dosowisko.cursor = !dosowisko.cursor;
                     if (cloudcount < -290) cloudcount = 290;
                     if (suncount < -320) suncount = 0;
                     if (counter % 10 === 0) {
@@ -208,7 +308,11 @@ function main()
                                 
                                 blit(sprites.mole2, canvas, 5, Math.max(0, -100 + height), 0, -Math.min(0,-100 + height + 5) - 5, 320, 155 + Math.min(0,-100 + height + 5));
                             } else {
+                                if (apressed) {
+                            blit(sprites.mole3, canvas, 5, Math.max(0,-100 + height), 0, -Math.min(0,-100 + height + 5) - 5, 320, 155 + Math.min(0,-100 + height + 5));                                    
+                                } else {
                             blit(sprites.mole1, canvas, 5, Math.max(0,-100 + height), 0, -Math.min(0,-100 + height + 5) - 5, 320, 155 + Math.min(0,-100 + height + 5));
+                                }
                             }
                             }
                         }
@@ -241,6 +345,15 @@ function main()
                         
                         //	textout(canvas,font,"Hello World!",x,y,24,makecol(0,0,0));
 
+                        if (dosowisko.enabled) {
+                                clear_to_color(canvas,makecol(0,0,0));
+                                if (!dosowisko.blank) {
+                                clear_to_color(canvas,makecol(35, 31, 32));
+textout_centre (canvas, font, ("# dosowisko.net".slice(0, dosowisko.length)) + (dosowisko.cursor ? "_" : " "), 320/2, 180/2 + (28 + Math.max(0,dosowisko.size))/2, 28 + Math.max(0,dosowisko.size), makecol(255,255,255, Math.min(255, dosowisko.alpha)));
+                                draw_sprite(canvas, dosowisko.checkerboard, 320/2, 180/2);
+                                }
+                        }
+                        
                 };
 	});
 	return 0;
