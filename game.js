@@ -169,9 +169,9 @@ function main()
                             if (progress) {
                             if (confumole) {
                                 
-                                blit(sprites.mole2, canvas, 0, -100 + height, -5, -5, 320, 155);
+                                blit(sprites.mole2, canvas, 5, Math.max(0, -100 + height), 0, -Math.min(0,-100 + height + 5) - 5, 320, 155 + Math.min(0,-100 + height + 5));
                             } else {
-                            blit(sprites.mole1, canvas, 0, -100 + height, -5, -5, 320, 155);
+                            blit(sprites.mole1, canvas, 5, Math.max(0,-100 + height), 0, -Math.min(0,-100 + height + 5) - 5, 320, 155 + Math.min(0,-100 + height + 5));
                             }
                             }
                         }
