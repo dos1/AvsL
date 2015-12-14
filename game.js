@@ -13,12 +13,13 @@ var lpressed = false;
 
 var tut = false, movingarm = false, growingmole = false, showmole = false, confumole = false;
 
-var height = -50, hheight = height;;
+var height = -50, hheight = height;
 
 var armx = -132;
 
-var progress = true, awon = false, lwon = false;;
+var progress = true, awon = false, lwon = false;
 
+var frame = 0;
 
 function checkwin() {
     if (height <= 0) { stop_sample(samples.music); play_sample(samples.lwon); progress = false; lwon = true; }
@@ -74,7 +75,7 @@ function install_keys() {
 
 function main()
 {
-	enable_debug('debug');
+	//enable_debug('debug');
 	allegro_init_all("game_canvas", 320, 180);
         	canvas.mozImageSmoothingEnabled = false;
 	canvas.webkitImageSmoothingEnabled = false;
@@ -156,9 +157,12 @@ function main()
                             height+=1;
                             if (height===60) growingmole = false;
                         }
+                        
+                    if (!frame) frame = requestAnimationFrame(draw);
 
                 },BPS_TO_TIMER(60));
                 var draw = function() {
+                        frame = 0;
                         clear_to_color(canvas,makecol(255,255,255));
                         draw_sprite(canvas, sprites.sky, 320/2, 180/2);
                         draw_sprite(canvas, sprites.sun, 320/2 + suncount, 180/2);
@@ -205,9 +209,7 @@ function main()
                         
                         //	textout(canvas,font,"Hello World!",x,y,24,makecol(0,0,0));
 
-                        requestAnimationFrame(draw);
                 };
-                draw();
 	});
 	return 0;
 }
