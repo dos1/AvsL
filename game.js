@@ -190,6 +190,9 @@ function main()
 	canvas.webkitImageSmoothingEnabled = false;
 	canvas.msImageSmoothingEnabled = false;
 	canvas.imageSmoothingEnabled = false;
+        
+        font = load_font('DejaVuSansMono.ttf');
+        
         sky = load_bmp('sky.png');
         
         bitmaps = bitmaps.forEach(function(name) {
@@ -207,9 +210,7 @@ function main()
         samples.dosowisko = load_sample('dosowisko.ogg');
         samples.kbd = load_sample('kbd.ogg');
         samples.key = load_sample('key.ogg');
-        
-        font = create_font('monospace');
-        
+                
         dosowisko.checkerboard = create_bitmap(320, 180);
         for (var i=0; i<=320; i=i+2) {
             for (var j=0; j<=180; j=j+2) {
