@@ -26,6 +26,35 @@ function checkwin() {
     if (height >= 120) { stop_sample(samples.music);  play_sample(samples.awon);  progress = false; awon = true;}
 }
 
+function apress() {
+    if (apressed) return;
+    apressed = true;
+                        lpressed = false;
+                        height+=2;
+                        tut=false;
+                        checkwin();
+                        play_sample(samples.whoosh[~~(Math.random()*3)]);
+}
+
+function lpress() {
+    if (lpressed) return;
+lpressed = true;
+                        apressed = false;
+                        height-=2;
+                        hheight = height;
+                        tut=false;
+                        play_sample(samples.bam[~~(Math.random()*3)]);
+                        checkwin();
+}
+
+function arelease() {
+    apressed = false;
+}
+
+function lrelease() {
+    lpressed = false;
+}
+
 function install_keys() {
 
                 document.addEventListener('keydown', function(e) {
@@ -41,21 +70,10 @@ function install_keys() {
                     if (!progress) return;
                     if (e.repeat) return;
                     if (key === 65) {
-                        apressed = true;
-                        lpressed = false;
-                        height+=2;
-                        tut=false;
-                        checkwin();
-                        play_sample(samples.whoosh[~~(Math.random()*3)]);
+                        apress();
                     }
                     if (key === 76) {
-                        lpressed = true;
-                        apressed = false;
-                        height-=2;
-                        hheight = height;
-                        tut=false;
-                        play_sample(samples.bam[~~(Math.random()*3)]);
-                        checkwin();
+                        lpress();
 
                     }
 
@@ -65,12 +83,26 @@ function install_keys() {
                 document.addEventListener('keyup', function(e) {
                     var key = e.which || e.keyCode;
                     if (key === 65) {
-                        apressed = false;
+                        arelease();
                     }
                     if (key === 76) {
-                        lpressed = false;
+                        lrelease();
                     }
                 });    
+                
+                var canv = document.querySelector('#game_canvas');
+                canv.addEventListener('touchstart', function(e) {
+                    Array.prototype.forEach.call(e.changedTouches, function(touch) {
+                        if (touch.clientX - canv.getBoundingClientRect().left < 320) apress();
+                        else lpress();
+                    });
+                });
+                canv.addEventListener('touchend', function(e) {
+                    Array.prototype.forEach.call(e.changedTouches, function(touch) {
+                        if (touch.clientX - canv.getBoundingClientRect().left < 320) arelease();
+                        else lrelease();
+                    });
+                });
 }
 
 function main()
