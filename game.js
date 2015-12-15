@@ -226,6 +226,7 @@ function main()
                 dosowisko.length = 1;
                 
                 setTimeout(function() {
+                    if (!dosowisko.enabled) return;
                     play_sample(samples.kbd);
 
                     dosowisko.interval = setInterval(function() {
@@ -234,6 +235,7 @@ function main()
                 }, 2000);
                 
                 setTimeout(function() {
+                    if (!dosowisko.enabled) return;
                     stop_sample(samples.kbd);
                     clearInterval(dosowisko.interval);
                     dosowisko.interval = null;
@@ -241,6 +243,7 @@ function main()
                 }, 3500);
 
                 setTimeout(function() {
+                    if (!dosowisko.enabled) return;
                     play_sample(samples.key);
                     dosowisko.blank = true;
                 }, 5200);                
